@@ -1,27 +1,27 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: minishop
+  name: my-demoshop-namespace
 ---
 # Backend Service Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend-service
-  namespace: minishop
+  namespace: my-demoshop-namespace
   labels:
-    app: minishop
+    app: demoshop
     service: backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: minishop
+      app: demoshop
       service: backend
   template:
     metadata:
       labels:
-        app: minishop
+        app: demoshop
         service: backend
     spec:
       containers:
@@ -40,7 +40,7 @@ spec:
               name: http
           env:
             - name: TEMPO_URL
-              value: "http://opentelemetry-collector-agent.tempo:4318/v1/traces"
+              value: "http://opentelemetry-collector-agent.tt:4318/v1/traces"
             - name: SERVICE_NAME
               value: "backend-service"
           resources:
@@ -80,20 +80,20 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: checkout-service
-  namespace: minishop
+  namespace: my-demoshop-namespace
   labels:
-    app: minishop
+    app: demoshop
     service: checkout
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: minishop
+      app: demoshop
       service: checkout
   template:
     metadata:
       labels:
-        app: minishop
+        app: demoshop
         service: checkout
     spec:
       containers:
@@ -112,7 +112,7 @@ spec:
               name: http
           env:
             - name: TEMPO_URL
-              value: "http://opentelemetry-collector-agent.tempo:4318/v1/traces"
+              value: "http://opentelemetry-collector-agent.tt:4318/v1/traces"
             - name: SERVICE_NAME
               value: "checkout-service"
           livenessProbe:
@@ -127,20 +127,20 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: fraud-service
-  namespace: minishop
+  namespace: my-demoshop-namespace
   labels:
-    app: minishop
+    app: demoshop
     service: fraud
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: minishop
+      app: demoshop
       service: fraud
   template:
     metadata:
       labels:
-        app: minishop
+        app: demoshop
         service: fraud
     spec:
       containers:
@@ -159,7 +159,7 @@ spec:
               name: http
           env:
             - name: TEMPO_URL
-              value: "http://opentelemetry-collector-agent.tempo:4318/v1/traces"
+              value: "http://opentelemetry-collector-agent.tt:4318/v1/traces"
             - name: SERVICE_NAME
               value: "fraud-service"
           livenessProbe:
@@ -174,20 +174,20 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: auth-service
-  namespace: minishop
+  namespace: my-demoshop-namespace
   labels:
-    app: minishop
+    app: demoshop
     service: auth
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: minishop
+      app: demoshop
       service: auth
   template:
     metadata:
       labels:
-        app: minishop
+        app: demoshop
         service: auth
     spec:
       containers:
@@ -206,7 +206,7 @@ spec:
               name: http
           env:
             - name: TEMPO_URL
-              value: "http://opentelemetry-collector-agent.tempo:4318/v1/traces"
+              value: "http://opentelemetry-collector-agent.tt:4318/v1/traces"
             - name: SERVICE_NAME
               value: "auth-service"
           livenessProbe:
@@ -221,13 +221,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: backend-service
-  namespace: minishop
+  namespace: my-demoshop-namespace
   labels:
-    app: minishop
+    app: demoshop
     service: backend
 spec:
   selector:
-    app: minishop
+    app: demoshop
     service: backend
   ports:
     - name: http
@@ -238,13 +238,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: checkout-service
-  namespace: minishop
+  namespace: my-demoshop-namespace
   labels:
-    app: minishop
+    app: demoshop
     service: checkout
 spec:
   selector:
-    app: minishop
+    app: demoshop
     service: checkout
   ports:
     - name: http
@@ -255,13 +255,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: fraud-service
-  namespace: minishop
+  namespace: my-demoshop-namespace
   labels:
-    app: minishop
+    app: demoshop
     service: fraud
 spec:
   selector:
-    app: minishop
+    app: demoshop
     service: fraud
   ports:
     - name: http
@@ -272,13 +272,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: auth-service
-  namespace: minishop
+  namespace: my-demoshop-namespace
   labels:
-    app: minishop
+    app: demoshop
     service: auth
 spec:
   selector:
-    app: minishop
+    app: demoshop
     service: auth
   ports:
     - name: http
@@ -288,18 +288,18 @@ spec:
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: minishop-services
-  namespace: minishop
+  name: demoshop-services
+  namespace: my-demoshop-namespace
   labels:
-    app: minishop
+    app: demoshop
     release: robusta
 spec:
   selector:
     matchLabels:
-      app: minishop
+      app: demoshop
   namespaceSelector:
     matchNames:
-      - minishop
+      - my-demoshop-namespace
   endpoints:
     - port: http
       interval: 15s
@@ -309,20 +309,20 @@ spec:
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: minishop-high-latency
-  namespace: minishop
+  name: test-nicolas-high-latency
+  namespace: my-demoshop-namespace
   labels:
-    app: minishop
+    app: demoshop
     release: robusta
     role: alert-rules
 spec:
   groups:
-    - name: minishop.rules
+    - name: demoshop.rules
       rules:
-        - alert: MinishopHighLatency
+        - alert: TestHighLatencyNicolas
           expr: histogram_quantile(0.9, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 4
           labels:
             severity: warning
           annotations:
-            summary: "High latency detected in Minishop application"
+            summary: "High latency detected in demoshop application"
             description: "The service is experiencing high latency (> 4s 90% percentile)"
