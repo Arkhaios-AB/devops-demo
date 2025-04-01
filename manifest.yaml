@@ -272,7 +272,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: auth-service
-  namespace: my-demoshop-namespace
+  namespace: my-demoshop-namespaces
   labels:
     app: demoshop
     service: auth
